@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>IOT HUb</title>
+</head>
+<body>
+    <h1>Devices</h1>
+    <span id="msg"></span></td></tr>
+    <br />
+    <span>Led</span><button onclick="led(true)">ON</button><button onclick="led(false)">OFF</button>
+    <br /> 
+    <span>Relay1</span><button onclick="relay(1,true)">ON</button><button onclick="relay(1,false)">OFF</button>
+    <br />
+    <span>Relay2</span><button onclick="relay(2,true)">ON</button><button onclick="relay(2,false)">OFF</button>
+    <script type="text/javascript">
+        function relay(num, on){
+            document.querySelector('#msg').value = "";
+            if(on){
+                fetch(`/relay/${num}/on`).then(r => r.text()).then(t => document.querySelector('#msg').value = t);
+            }else{
+                fetch(`/relay/${num}/off`).then(r => r.text()).then(t => document.querySelector('#msg').value = t);
+            }
+        }
+        function led(on){
+            document.querySelector('#msg').value = "";
+            if(on){
+                fetch('/led/on').then(r => r.text()).then(t => document.querySelector('#msg').value = t);
+            }else{
+                fetch('/led/off').then(r => r.text()).then(t => document.querySelector('#msg').value = t);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -25,22 +25,33 @@ s = socket.socket()
 s.bind(addr)
 s.listen(1)
 
+html = """
+<!DOCTYPE html><html lang="en"><head> <title>IOT HUb</title></head>
+<body> <h1>Devices</h1> <span id="msg"></span></td></tr><br/> <span>Led</span><button onclick="led(true)">ON</button><button onclick="led(false)">OFF</button> <br/> <span>Relay1</span><button onclick="relay(1,true)">ON</button><button onclick="relay(1,false)">OFF</button> <br/> <span>Relay2</span><button onclick="relay(2,true)">ON</button><button onclick="relay(2,false)">OFF</button> 
+<script type="text/javascript">function relay(num, on){document.querySelector('#msg').value=""; if(on){fetch(`/relay/${num}/on`).then(r=> r.text()).then(t=> document.querySelector('#msg').value=t);}else{fetch(`/relay/${num}/off`).then(r=> r.text()).then(t=> document.querySelector('#msg').value=t);}}function led(on){document.querySelector('#msg').value=""; if(on){fetch('/led/on').then(r=> r.text()).then(t=> document.querySelector('#msg').value=t);}else{fetch('/led/off').then(r=> r.text()).then(t=> document.querySelector('#msg').value=t);}}</script>
+</body></html>
+"""
+
 print('listening on', addr)
 
 def parse_req(req):
     try:
         match = re.search('^GET\s+(.*)\s+HTTP/1.1.*$',req)
         if match:
-            return match.group(1).split('/')
+            return match.group(1)
         else:
             print('not doing other req now')
-            return []
+            return ""
     except:
         print('parsing error!')
-        return []
+        return ""
 
-def route_req(req):
+def route_req(req_url):
     try:
+        if req_url == "/":
+            # f = open("index.html")
+            return html
+        req = req_url.split('/')
         if req[1] == 'led':
             led(req[2] == 'on')
             return 'led is turned '+ req[2]
@@ -59,11 +70,11 @@ while True:
     req = parse_req(data)
     print(req)
     cl_file = cl.makefile('rwb', 0)
+    response = route_req(req)
     while True:
         line = cl_file.readline()
         if not line or line == b'\r\n':
             break
-    response = route_req(req)
     print(response)
     cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
     cl.send(response)

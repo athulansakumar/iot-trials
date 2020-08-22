@@ -1,10 +1,7 @@
 # iot-trials
 
-Controling led and relay through get requests
+Controling pins through get requests
 
-- /led/on - turn on the led
-- /led/off - turn on the led
-- /relay/1/on - turn on relay1
-- /relay/1/off - turn off relay1
-- /relay/2/on - turn on relay2
-- /relay/2/off - turn off relay2
+- /get/{pin number} - get value of pin (on/off)
+- /pin/{pin number}/on - turn on pin
+- /pin/{pin number}/off - turn off pin
